@@ -16,6 +16,9 @@ function App() {
     x:"",
     y:""
   })
+  const [showMeaning,setShowMeaning]=useState(false);
+  const [objs,setobjs]=useState({});
+  console.log(objs);
    useEffect(()=>{
     console.log(textcontent);
    },[textcontent])
@@ -65,7 +68,7 @@ function App() {
     };
     const [pageCount,setpageCount]=useState(0);
   return (
-    <div className="App ">
+    <div className="App bg-black text-[white]">
 
       {pageCount ? <div className={` absolute top-[20px] left-[40px] `}>{pageCount}</div> :null }
      {!textcontent && <input
@@ -73,13 +76,14 @@ function App() {
         accept="application/pdf"
         onChange={(e)=>handleFileChange(e,setTextContent)}
       />}
+      {textcontent ? <div className="w-[100%] bg-[rgba(255,255,255,.3)] min-h-[100px]"></div>:null}
       <div onClick={(e)=>{
           if(e.button===0){
             setShowContentMenu(false);
           }
       }} className="flex !transition-all flex-row h-[90%] mt-2 w-[100%]    ">{
         // flex  relative  w-90% flex-row h-90% gap-[20px] border-2 border-black overflow-y-scroll
-         textcontent?.length&& textcontent.map((ele,ind1)=>{
+         textcontent?.length? textcontent.map((ele,ind1)=>{
           return <div  style={{marginLeft: ind1===0? !pageCount? "":`-${pageCount}00%`:""}} key={ind1}  className=" main !min-w-[100%] h-[95%]  !overflow-y-scroll   ">
             
             {
@@ -109,14 +113,33 @@ function App() {
               })
             }
           </div>
-         })
+         }):null
         
         }
         
         {
-  showContentMenu && <ContentMenu left={pos.x} top={pos.y} val={text} handleSpeak={handleSpeak}/>
+  showContentMenu && <ContentMenu showMeaning={showMeaning} setobjs={setobjs} setShowMeaning={setShowMeaning} left={pos.x} top={pos.y} val={text} handleSpeak={handleSpeak}/>
 }
-{true &&     <ArrowRightIcon onClick={()=>setpageCount(pageCount+1)}  className="arrow active:bg-[rgba(0,0,0,.4)] transition-all active:cursor-pointer !left-[auto] !text-[32px] top-[20px] right-[5%] absolute"  />}
+    {showMeaning? <div className="absolute gap-[20px] !text-white flex flex-col justify-center items-center top-[25%] py-5 bottom-auto !ml-[18%] mr-auto !w-[60%] !h-[auto] !bg-[rgba(255,255,255,.4)] backdrop-blur-lg ">
+      
+      {  Object.keys(objs)?.length ?
+       <>
+        <h1 className="text-[24px]">  Meaning of {Object.keys(objs)[0]} </h1>
+        <p className="w-[90%] leading-9 line-clamp-5  text-[18px]">{Object.values(objs)[0]} </p>
+        {/* {Object.values(objs)[0].split(", ").map((e,i)=>{
+          return <p className="w-[90%] text-[18px]"> . {e} </p>
+        })} */}
+       </>
+        :null  }
+        <div className="border-[1px] absolute border-white px-2 py-1 top-[20px] left-auto right-[20px]" onClick={()=>{
+          setobjs({})
+          setShowMeaning(false);
+        }}> X</div>
+      </div>
+    :null
+    }
+
+{true &&     <ArrowRightIcon onClick={()=>setpageCount(pageCount+1)}  className="arrow active:bg-[rgba(0,0,0,.4)] transition-all active:cursor-pointer !left-[auto] !text-[32px] top-[120px] right-[5%] absolute"  />}
 
      
         </div>
@@ -132,7 +155,7 @@ function App() {
 export default App;
 
 
-const ContentMenu=( {left,top,handleSpeak,val} )=>{
+const ContentMenu=( {left,top,handleSpeak,val,setShowMeaning,setobjs} )=>{
   console.log(left,top);
   top=top + window.scrollY; 
   left= left + window.scrollX;
@@ -160,25 +183,36 @@ const ContentMenu=( {left,top,handleSpeak,val} )=>{
        return e;
      }).join(",");
      console.log(`${val}`,meanings);
+     return {[val]:meanings};
   }
     catch(e){
       console.log(e?.message);
+      return {"error":e?.message}
     }
   }
+  
+  // useEffect(()=>{
+  //  console.log("comp is getting updated",showMeaning);
+  // },[showMeaning])
   var list=["Text to Speech","Annotation","BookMark"];
-  return <div style={style} className={` absolute w-[auto]   h-[auto] bg-black  flex flex-col `}>
+  return <> <div style={style} className={` absolute w-[auto]   h-[auto] bg-black  flex flex-col `}>
 
     {
       list.map((e,i)=>{
-        return <div onClick={()=>{
+        return <div onClick={async()=>{
           if(i==0){
             handleSpeak(val)
           }
           else if(i==1){
-            meaningOfWord(val);
+            setShowMeaning(true);
+            // meaningOfWord(val);
+            setobjs(await meaningOfWord(val));
           }
         }} className={` active:tracking-wider w-[170px] cursor-pointer h-[30px]  border-[1px] flex font-2xl items-center justify-start  py-4 px-4  border-white text-white`} key={i}>{e}</div>
       })
     }
   </div>
+
+  </>
+
 }
