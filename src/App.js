@@ -131,7 +131,7 @@ function App() {
         })} */}
        </>
         :null  }
-        <div className="border-[1px] absolute border-white px-2 py-1 top-[20px] left-auto right-[20px]" onClick={()=>{
+        <div className="border-[1px] absolute border-white px-2 py-1 cursor-pointer top-[20px] left-auto right-[20px]" onClick={()=>{
           setobjs({})
           setShowMeaning(false);
         }}> X</div>
