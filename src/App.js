@@ -67,10 +67,24 @@ function App() {
       
     };
     const [pageCount,setpageCount]=useState(0);
+    
+    useEffect(()=>{
+     console.log(parseFloat(pageCount/textcontent.length).toFixed(2)*100);
+    },[pageCount])
   return (
     <div className="App bg-black text-[white]">
 
-      {pageCount ? <div className={` absolute top-[20px] left-[40px] `}>{pageCount}</div> :null }
+      {textcontent?
+       <div className={` absolute  min-w-[100%] h-[100px]  flex flex-col `}>
+  
+        <div className="min-w-[100%] h-[4px] ">
+          <div style={{width:`${parseFloat(pageCount/textcontent.length).toFixed(2)*100}%`}} className={` min-h-[100%]  bg-gradient-to-r from-violet-500 to-fuchsia-500`}></div>
+        </div>
+        <div className="mt-3 ml-3">PageCount : {  pageCount}</div>
+
+
+
+      </div> :null }
      {!textcontent && <input
         type="file"
         accept="application/pdf"
@@ -84,7 +98,7 @@ function App() {
       }} className="flex !transition-all flex-row h-[90%] mt-2 w-[100%]    ">{
         // flex  relative  w-90% flex-row h-90% gap-[20px] border-2 border-black overflow-y-scroll
          textcontent?.length? textcontent.map((ele,ind1)=>{
-          return <div  style={{marginLeft: ind1===0? !pageCount? "":`-${pageCount}00%`:""}} key={ind1}  className=" main !min-w-[100%] h-[95%]  !overflow-y-scroll   ">
+          return <div  style={{marginLeft: ind1===0? !pageCount? "":`-${pageCount}00%`:""}} key={ind1}  className=" main !min-w-[100%] h-[95%] mono !overflow-y-scroll   ">
             
             {
               ele?.items?.map((e,i)=>{
@@ -139,7 +153,11 @@ function App() {
     :null
     }
 
-{true &&     <ArrowRightIcon onClick={()=>setpageCount(pageCount+1)}  className="arrow active:bg-[rgba(0,0,0,.4)] transition-all active:cursor-pointer !left-[auto] !text-[32px] top-[120px] right-[5%] absolute"  />}
+  {  
+  textcontent ?
+  <ArrowRightIcon onClick={()=>setpageCount(pageCount+1)}  className="arrow active:bg-[rgba(0,0,0,.4)] transition-all active:cursor-pointer !left-[auto] !text-[32px] top-[120px] right-[5%] absolute"  />
+  :null
+  }
 
      
         </div>
